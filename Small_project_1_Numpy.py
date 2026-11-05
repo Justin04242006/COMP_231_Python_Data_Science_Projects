@@ -13,6 +13,7 @@ Tromso_2024_weather_data=np.genfromtxt("/Users/justinpeabody/Desktop/COMP_231/In
 
 #Column 0 = the date (as expected, it was filled with NaN values because numpy csv import ufuncs expect all values in the file to be the same data type), Column 3 = maximum temperatures, Column 2= minimum temperature, Column 4 = total precipitation, Column 5=snow depth
 
+
 #Question 1: How many days out of the year is there precipitation?
 
 Precipitation_array=Tromso_2024_weather_data[:, 4]
@@ -146,7 +147,7 @@ for i in range(len(months)):
     start=start_indices[i]
     end=start_indices[i+1]
     new_max_temp_array=maximum_temp_array[start:end] #Creating a new array that is a subset of the 1 dimensional snow depth array, subsetted to include elements form the month in question
-    max_temp=np.max(new_max_temp_array)
+    max_temp=np.max(new_max_temp_array) #Calculating the maximum recorded temperature within each month's subarray of maximum temperatures
     tup=(months[i], float(max_temp))
     max_temp_by_month.append(tup)
 print(max_temp_by_month)
@@ -166,5 +167,102 @@ print(max_temp_by_month)
 #December: 5.3 C
 
 
+#Question 6: How many days experienced rain, snow, or neither? 
 
-        
+Max_temp_precip_array=Tromso_2024_weather_data[:, 3:5]
+
+Num_days_rain=int(np.sum(np.bitwise_and(Max_temp_precip_array[:, 0] >= 0, Max_temp_precip_array[:, 1] > 0))) #Sums all the rows of the array containing the maximum temperature and precipitation columns for which the precipitation column ahs a value greater than zero and the temperature column has a value greater than or equal to zero both columns have values greater than zero (rain)
+Num_days_snow=int(np.sum(np.bitwise_and(Max_temp_precip_array[:, 0] < 0, Max_temp_precip_array[:, 1] > 0))) #Sums all the rows of the array for which the max temperature column is less than 0 and preciptiation is greater than zero (snow)
+Num_days_no_precip=int(np.sum(Precipitation_array == 0))
+
+print(Num_days_rain)
+print(Num_days_snow)
+print(Num_days_no_precip)
+
+#It rained on 190 days, snowed on 47 days, and neither on 129 days.
+
+
+### We also need the number of days per month in which it rained, snowed, and neither.
+
+
+days_snowed_per_month=[] 
+for i in range(len(months)):
+    start=start_indices[i]
+    end=start_indices[i+1]
+    new_temp_precip_array=Max_temp_precip_array[start:end] 
+    Num_days_snow=int(np.sum(np.bitwise_and(new_temp_precip_array[:, 0] < 0, new_temp_precip_array[:, 1] > 0))) 
+    tup=(months[i], int(Num_days_snow))
+    days_snowed_per_month.append(tup)
+print(days_snowed_per_month)
+
+
+days_rained_per_month=[]
+for i in range(len(months)):
+    start=start_indices[i]
+    end=start_indices[i+1]
+    new_temp_precip_array=Max_temp_precip_array[start:end] 
+    Num_days_rain=int(np.sum(np.bitwise_and(new_temp_precip_array[:, 0] >= 0, new_temp_precip_array[:, 1] > 0))) 
+    tup=(months[i], int(Num_days_rain))
+    days_rained_per_month.append(tup)
+print(days_rained_per_month)
+
+
+
+days_clear_per_month=[]
+for i in range(len(months)):
+    start=start_indices[i]
+    end=start_indices[i+1]
+    new_temp_precip_array=Max_temp_precip_array[start:end]
+    Num_days_clear=int(np.sum(new_temp_precip_array[:, 1] == 0))
+    tup=(months[i], int(Num_days_clear))
+    days_clear_per_month.append(tup)
+print(days_clear_per_month)
+
+
+
+ 
+#Question 7: Which month has the least number of days that rain or snow (either type of precipitation)?
+
+Num_days_precipitation_by_month=[]
+for i in range(len(months)):
+    start=start_indices[i]
+    end=start_indices[i+1]
+    new_precip_array=Precipitation_array[start:end] #Creating a new array that is a subset of the 1 dimensional snow depth array, subsetted to include elements form the month in question
+    num_days_precip=np.sum(new_precip_array > 0)
+    tup=(months[i],int(num_days_precip))
+    Num_days_precipitation_by_month.append(tup)
+print(Num_days_precipitation_by_month)
+
+#January: 20 days
+#February: 20 days
+#March: 20 days
+#April: 13 days
+#May: 18 days
+#June: 17 days
+#July: 13 days
+#August: 18 days
+#September: 18 days
+#October: 28 days
+#Novermber: 27 days
+#December: 25 days
+
+#Based on 2024 data, either April or July would be the best months to visit Tromso to minimize chances of snow or rain
+
+
+#Writing the results of questions 1 through 7 to a CSV file in the specified format
+
+Tromso_2024_weather_results=open("Tromso_2024_results.csv", "w")
+Tromso_2024_weather_results.write("Annual statistics: \n")
+Tromso_2024_weather_results.write(f"# of days with precipitation, {Num_days_with_precipitation} \n")
+Tromso_2024_weather_results.write(f"Avg (stdev) precipitation, {Average_precip_inches} +/- {Standard_deviation_precip_inches} inches \n")
+Tromso_2024_weather_results.write("Month(s) with least days of snow or rain (# days), April(13), July(13) \n")
+
+Tromso_2024_weather_results.write("\n")
+Tromso_2024_weather_results.write("Monthly statistics: \n")
+Tromso_2024_weather_results.write("Month, # days snow on ground, max snow on ground (mm), min temp, max temp, # days snow, # days rain, # days clear \n")
+for i in range(len(months)):
+    Tromso_2024_weather_results.write(f"{months[i]}, {num_days_nonzero_snow_depth[i][1]}, {max_snow_cover_monthly[i][1]}, {min_temp_by_month[i][1]}, {max_temp_by_month[i][1]}, {days_snowed_per_month[i][1]}, {days_rained_per_month[i][1]}, {days_clear_per_month[i][1]} \n")
+Tromso_2024_weather_results.close()
+
+
+
