@@ -21,7 +21,21 @@ Created on Thu Oct 29 13:30:49 2026
 #7.	Which month experienced the least number of days of snow or rain?
 
 
+#The second project, Small_project_2(Pandas), uses Numpy and Pandas modules to perform various data analysis and aggregation tasks on a Kaggle dataset of 1980s songs. 
+# Link to the Kaggle dataset: https://www.kaggle.com/datasets/thebumpkin/1980s-classic-hits-with-spotify-data?resource=download
+
+#This project required me to use all the columns in the dataset (see above link for column descriptions), NumPy Ufuncs, and Pandas modules to answer each of the following questions by creaitng a formatted Pandas dataframe storing the results of my analysis for that question.
+
+#1) How does the happiness level of songs change throughout the decade)?
+#2) How does the duration of a song relate to its danceability?
+#3) Are higher-tempo songs more popular?
+#4) Which artists have the highest proportion of danceable songs?
 
 
-    
+
+
+
+
+
+
     
